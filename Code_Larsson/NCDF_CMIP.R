@@ -233,62 +233,78 @@ extent(tmin.raster)
 
 
 
-
-
-
-#convert lon variable to degrees west
-ncin <- nc_open(nc.filename)
-lat<-ncvar_get(ncin,"lat")
-lon<-ncvar_get(ncin,"lon")
-nc_close(ncin)
-
-lon <- (360-lon)*-1
-
-#target location -- Blacksburg, VA -- coordinates from blacksbur nws
-bb.lon <- -80.43 #degrees west
-bb.lat <- 37.24 #degrees north
-#need degrees east. convert
-# bb.lon.east <- 360-abs(bb.lon)
-# bb.lon.east #check value
-
-bb.xindex <- max(which(lon < bb.lon))
-bb.xindex
-lon[bb.xindex]
-lon[bb.xindex+1]
-bb.yindex <- max(which(lat < bb.lat))
-bb.yindex
-lat[bb.yindex]
-lat[bb.yindex+1]
-
-# lon[bb.xcoord]-360
-#i think the issue might be this rotation?? check w julie tomorrow
-
-#Montgomery County raster is around cell 1600, 
-#which is approximately row 24 & col 36
-#current results yielding row 29, col 38
-#cell (0,0) in upper left corner
-
-#check previous blacksburg raster cell
-# cell <- cellFromRowCol(tmin.raster, bb.yindex, bb.xindex)
-# rc <- rowColFromCell(tmin.raster, cell)
-#setwd(images.loc)
-#png("CheckSpatialExtentError.png")
-plot(tmin.raster[[1]]); lines(app.reproj)
-plot(extent(tmin.raster[[1]], bb.yindex, bb.yindex, bb.xindex, bb.xindex), add=TRUE, col="red", lwd=3);
-lines(Montgomery.County.reproj, col="blue", lwd=3)
-#points(bb.xcoord, bb.ycoord , type="p", col="red", pch=19)
-#dev.off()
-
-# val <- extract(tmin.raster, data.frame(bb.lon, bb.lat))
-# View(val)
 # 
-# val2 <- extract(tmin.raster, data.frame(bb.xcoord, bb.ycoord))
-# View(val)
-#check extent of rotated object
-extent(tmin.raster)
-extent(app.reproj)
-
+# 
+# 
+# #convert lon variable to degrees west
+# ncin <- nc_open(nc.filename)
+# lat<-ncvar_get(ncin,"lat")
+# lon<-ncvar_get(ncin,"lon")
+# nc_close(ncin)
+# 
+# lon <- (360-lon)*-1
+# 
+# #target location -- Blacksburg, VA -- coordinates from blacksbur nws
+# bb.lon <- -80.43 #degrees west
+# bb.lat <- 37.24 #degrees north
+# #need degrees east. convert
+# # bb.lon.east <- 360-abs(bb.lon)
+# # bb.lon.east #check value
+# 
+# bb.xindex <- max(which(lon < bb.lon))
+# bb.xindex
+# lon[bb.xindex]
+# lon[bb.xindex+1]
+# bb.yindex <- max(which(lat < bb.lat))
+# bb.yindex
+# lat[bb.yindex]
+# lat[bb.yindex+1]
+# 
+# # lon[bb.xcoord]-360
+# #i think the issue might be this rotation?? check w julie tomorrow
+# 
+# #Montgomery County raster is around cell 1600, 
+# #which is approximately row 24 & col 36
+# #current results yielding row 29, col 38
+# #cell (0,0) in upper left corner
+# 
+# #check previous blacksburg raster cell
+# # cell <- cellFromRowCol(tmin.raster, bb.yindex, bb.xindex)
+# # rc <- rowColFromCell(tmin.raster, cell)
+# #setwd(images.loc)
+# #png("CheckSpatialExtentError.png")
+# plot(tmin.raster[[1]]); lines(app.reproj)
+# plot(extent(tmin.raster[[1]], bb.yindex, bb.yindex, bb.xindex, bb.xindex), add=TRUE, col="red", lwd=3);
+# lines(Montgomery.County.reproj, col="blue", lwd=3)
+# #points(bb.xcoord, bb.ycoord , type="p", col="red", pch=19)
+# #dev.off()
+# 
+# # val <- extract(tmin.raster, data.frame(bb.lon, bb.lat))
+# # View(val)
+# # 
+# # val2 <- extract(tmin.raster, data.frame(bb.xcoord, bb.ycoord))
+# # View(val)
+# #check extent of rotated object
+# extent(tmin.raster)
+# extent(app.reproj)
+# 
 
 #extract part of tutorial
 
 
+county.tmin <- data.frame(STATEFP=VA.counties@data$STATEFP,
+                          CountyFP=VA.counties@data$COUNTYFP,
+                          Name=VA.counties@data$NAME)
+
+start.time <- Sys.time()
+
+for(d in 1:dim(tmin.raster)[3]) {
+  column.id <- paste0("Day", as.character(d))
+  county.avg <- sapply(extract(tmin.raster[[d]], VA.counties),
+                       FUN=mean, na.rm=TRUE)
+  county.tmin$avg <- county.avg
+  colnames(county.tmin)[d+3] <- column.id
+}
+
+end.time <- Sys.time()
+end.time-start.time
