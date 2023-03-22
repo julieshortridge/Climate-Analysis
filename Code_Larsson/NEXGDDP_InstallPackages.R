@@ -1,0 +1,7 @@
+install.packages("ncdf4")
+install.packages("raster")
+install.packages("rgdal")
+install.packages("httr")
+install.packages("utils")
+install.packages("googledrive")
+install.packages("lubridate")
