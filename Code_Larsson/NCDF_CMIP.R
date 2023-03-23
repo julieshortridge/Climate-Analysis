@@ -308,3 +308,5 @@ for(d in 1:dim(tmin.raster)[3]) {
 
 end.time <- Sys.time()
 end.time-start.time
+
+#figure with spatially aggregated values plus summary. check with single day data. put up on github
