@@ -8,8 +8,9 @@ library(raster)
 library(rgdal)
 library(rgeos)
 
-### GET COUNTY SHAPEFILE --------
-county.loc <- "C:\\Users\\nalar\\Documents\\R\\PRISM\\cb_2016_us_county_5m\\Counties"
+### GET COUNTY SHAPEFILE -------
+county.loc <- "C:\\Users\\nlarsson\\Documents\\R\\Climate-Analysis\\cb_2016_us_county_5m"
+#county.loc <- "C:\\Users\\nalar\\Documents\\R\\PRISM\\cb_2016_us_county_5m\\Counties"
 setwd(county.loc)
 counties.shape<-readOGR(dsn=".",layer="cb_2016_us_county_5m") 
 
